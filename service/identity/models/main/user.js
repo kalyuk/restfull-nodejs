@@ -5,7 +5,13 @@ export default (sequelize, DataTypes) => {
     email: {
       type: DataTypes.STRING(64),
       allowNull: false,
-      unique: true
+      unique: true,
+      swagger: {
+        minLength: 5,
+        maxLength: 64,
+        required: true,
+        type: 'string'
+      }
     },
     passwordHash: {
       type: DataTypes.STRING,
@@ -13,6 +19,12 @@ export default (sequelize, DataTypes) => {
     },
     password: {
       type: DataTypes.VIRTUAL,
+      swagger: {
+        minLength: 5,
+        maxLength: 128,
+        required: true,
+        type: 'string'
+      },
       set: function (val) {
         this.setDataValue('password', val);
         this.setDataValue('passwordHash', passwordHash.generate(val));
@@ -28,7 +40,12 @@ export default (sequelize, DataTypes) => {
     status: {
       type: DataTypes.ENUM('new', 'blocked'),
       defaultValue: 'new',
-      allowNull: false
+      allowNull: false,
+      swagger: {
+        description: 'by default used "new"',
+        type: 'string',
+        enum: ['new', 'blocked']
+      }
     }
   }, {
     tableName: 'user',
