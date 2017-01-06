@@ -8,6 +8,7 @@ class Server {
 
   boot = [
     'database',
+    'migrations',
     'service-boot',
     'middleware',
     'router'
@@ -15,17 +16,21 @@ class Server {
 
   __options = {
     PORT: 1987,
+    ENV: 'develop',
     SERVICES: 'swagger'
   };
 
   constructor() {
     this.__app = express();
     this.__app.disable('x-powered-by');
+    this.__app.set('view engine', 'pug');
 
     process.argv.forEach((val) => {
       let tmp = val.split('=');
       this.__options[tmp[0].toUpperCase()] = tmp[1];
     });
+
+    this.__app.options = this.__options;
 
     this.loadConfigs().then(config => {
       return this.runBoot(config);
@@ -36,15 +41,17 @@ class Server {
     return new Promise(resolve => {
       let services = this.getOption('SERVICES').split(',');
       let config = {};
+      this.__app.service = {};
 
       each(services, (service, callback) => {
+        this.__app.service[service] = {};
         glob(path.join(__dirname, '..', 'service', service, 'config', '**', '*.js'), (err, files) => {
           files.forEach(file => {
             let name = file.split('/').pop().split('.js')[0];
             if (!config[name]) {
               config[name] = {};
             }
-            config[name][service] = require(file).default(this.__app);
+            config[name][service] = require(file).default();
           });
           callback(null);
         });

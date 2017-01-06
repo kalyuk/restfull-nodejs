@@ -19,8 +19,7 @@ export default function (app) {
           module.default(app, options || {}).then(callback);
         });
       });
-
-      series(boot, resolve);
     });
+    return series(boot, resolve);
   });
 }

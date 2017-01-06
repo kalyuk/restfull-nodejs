@@ -27,7 +27,7 @@ export default function (app) {
         }
 
         app[method](`/${serviceName}${uri}`, (req, res) => {
-          return controllers[`${serviceName}:${controller}`][action](req, res, app);
+          return controllers[`${serviceName}:${controller}`][action](req, res, app.service[serviceName]);
         });
       });
     });

@@ -1,8 +1,12 @@
 export default function () {
   return {
-    /* 'GET /': {
+    'GET /': {
       controller: 'default',
       action: 'ui'
-    }*/
+    },
+    'GET /json': {
+      controller: 'json',
+      action: 'json'
+    }
   };
 }
