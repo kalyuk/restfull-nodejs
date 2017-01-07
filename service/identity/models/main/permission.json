@@ -1,0 +1,46 @@
+{
+  "model": "Permission",
+  "name": {
+    "singular": "permission",
+    "plural": "permissions"
+  },
+  "tableName": "permission",
+  "hidden": [
+    "role_has_permission"
+  ],
+  "properties": {
+    "service": {
+      "type": {
+        "name": "string",
+        "options": {
+          "length": 64
+        }
+      },
+      "options": {
+        "allowNull": false
+      }
+    },
+    "model": {
+      "type": {
+        "name": "string",
+        "options": {
+          "length": 64
+        }
+      },
+      "options": {
+        "allowNull": false
+      }
+    },
+    "method": {
+      "type": {
+        "name": "string",
+        "options": {
+          "length": 64
+        }
+      },
+      "options": {
+        "allowNull": false
+      }
+    }
+  }
+}

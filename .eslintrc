@@ -317,7 +317,7 @@
     // enforces spacing between keys and values in object literal properties
     "max-nested-callbacks": [
       1,
-      3
+      4
     ],
     // specify the maximum depth callbacks can be nested (off by default)
     "new-cap": [
@@ -423,7 +423,7 @@
       "error",
       "never",
       {
-        "objectsInObjects": true
+        "objectsInObjects": false
       }
     ],
     // enforce consistent spacing inside braces of object literals, destructuring assignments, and import/export specifiers.

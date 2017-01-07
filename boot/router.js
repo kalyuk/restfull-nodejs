@@ -19,15 +19,22 @@ export default function (app) {
 
         method = ['all', 'get', 'post', 'put', 'delete'].indexOf(method) !== -1 ? method : 'all';
 
-        let {controller, action} = routes[serviceName][route];
+        let {controller, action, prefix} = routes[serviceName][route];
 
         if (!controllers[`${serviceName}:${controller}`]) {
-          let controllerPath = path.join(__dirname, '..', 'service', serviceName, 'controllers', controller);
+          let controllerPath = path.join(
+            __dirname,
+            '..',
+            'service',
+            serviceName,
+            'controllers',
+            controller + 'Controller'
+          );
           controllers[`${serviceName}:${controller}`] = require(controllerPath);
         }
 
-        app[method](`/${serviceName}${uri}`, (req, res) => {
-          return controllers[`${serviceName}:${controller}`][action](req, res, app.service[serviceName]);
+        app[method](`${(prefix ? prefix : '/api')}/${serviceName}${uri}`, (req, res) => {
+          return controllers[`${serviceName}:${controller}`][action + 'Action'](req, res, app.service[serviceName]);
         });
       });
     });

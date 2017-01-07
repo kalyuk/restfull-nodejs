@@ -1,0 +1,55 @@
+{
+  "model": "User",
+  "name": {
+    "singular": "user",
+    "plural": "users"
+  },
+  "tableName": "user",
+  "hidden": [
+    "passwordHash",
+    "password"
+  ],
+  "properties": {
+    "email": {
+      "type": {
+        "name": "string",
+        "options": {
+          "length": 64
+        }
+      },
+      "options": {
+        "allowNull": false,
+        "unique": true
+      }
+    },
+    "passwordHash": {
+      "type": {
+        "name": "string",
+        "options": {
+          "length": 128
+        }
+      },
+      "options": {
+        "allowNull": false,
+        "unique": true
+      }
+    },
+    "password": {
+      "type": {
+        "name": "virtual"
+      }
+    },
+    "status": {
+      "type": {
+        "name": "enum",
+        "options": [
+          "new",
+          "blocked"
+        ]
+      },
+      "options": {
+        "default": "new"
+      }
+    }
+  }
+}

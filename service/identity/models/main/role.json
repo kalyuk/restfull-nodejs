@@ -1,0 +1,25 @@
+{
+  "model": "Role",
+  "name": {
+    "singular": "role",
+    "plural": "roles"
+  },
+  "hidden": [
+    "user_has_role"
+  ],
+  "tableName": "role",
+  "properties": {
+    "name": {
+      "type": {
+        "name": "string",
+        "options": {
+          "length": 64
+        }
+      },
+      "options": {
+        "allowNull": false,
+        "unique": true
+      }
+    }
+  }
+}

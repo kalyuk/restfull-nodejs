@@ -1,64 +1,87 @@
 import passwordHash from 'password-hash';
+import jwt from 'jsonwebtoken';
 
-export default (sequelize, DataTypes) => {
-  let User = sequelize.define('User', {
-    email: {
-      type: DataTypes.STRING(64),
-      allowNull: false,
-      unique: true,
-      swagger: {
-        minLength: 5,
-        maxLength: 64,
-        required: true,
-        type: 'string'
-      }
-    },
-    passwordHash: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    password: {
-      type: DataTypes.VIRTUAL,
-      swagger: {
-        minLength: 5,
-        maxLength: 128,
-        required: true,
-        type: 'string'
-      },
-      set: function (val) {
-        this.setDataValue('password', val);
-        this.setDataValue('passwordHash', passwordHash.generate(val));
-      },
-      validate: {
-        isLongEnough: function (val) {
-          if (val.length < 4) {
-            throw new Error('Please choose a longer password');
-          }
+export const setterMethods = {
+  password: function (value) {
+    this.setDataValue('password', value);
+    this.setDataValue('passwordHash', passwordHash.generate(value));
+  }
+};
+
+export const validate = {
+  rules: function () {
+    if (this.password.length < 4) {
+      throw new Error('Please choose a longer password');
+    }
+    if (this.password.length > 128) {
+      throw new Error('Please choose a smaller password');
+    }
+  }
+};
+
+export const instanceMethods = {
+  validPassword: function (password) {
+    return passwordHash.verify(password, this.passwordHash);
+  }
+};
+
+export const classMethods = {
+  associate: function ({User, Role}) {
+    User.belongsToMany(Role, {
+      through: 'user_has_role',
+      foreignKey: 'userId',
+      otherKey: 'roleId'
+    });
+  },
+  login: function (email, password) {
+    let {Role, Permission} = this.sequelize.models;
+    return new Promise((resolve, reject) => {
+      this.find({
+        include: [{model: Role, include: [Permission]}],
+        where: {
+          email: email
         }
-      }
-    },
-    status: {
-      type: DataTypes.ENUM('new', 'blocked'),
-      defaultValue: 'new',
-      allowNull: false,
-      swagger: {
-        description: 'by default used "new"',
-        type: 'string',
-        enum: ['new', 'blocked']
-      }
-    }
-  }, {
-    tableName: 'user',
-    instanceMethods: {
-      validPassword: function (password) {
-        return passwordHash.verify(password, this.passwordHash);
-      }
-    },
-    classMethods: {},
-    name: {
-      singular: 'user',
-      plural: 'users'
-    }
-  });
-  return User;
+      }).then(user => {
+        if (user.validPassword(password)) {
+          let roles = user.roles.map(role => {
+            let tmp = {};
+            let t = {};
+            role.permissions.forEach(permission => {
+              if (!t[`${permission.service}:${permission.model}`]) {
+                t[`${permission.service}:${permission.model}`] = 0;
+              }
+              t[`${permission.service}:${permission.model}`] += 1;
+            });
+            tmp[role.name] = t;
+            return tmp;
+          });
+
+          let expireDate = new Date();
+          expireDate.setHours(expireDate.getHours() + 8);
+          let expireTokenDate = expireDate.getTime();
+
+          expireDate.setHours(expireDate.getHours() + 6);
+          let expireRefreshTokenDate = expireDate.getTime();
+
+          let token = jwt.sign({
+            user: {
+              email: user.email,
+              hashId: user.hashId,
+              status: user.status
+            },
+            roles,
+            expireRefreshTokenDate,
+            expireTokenDate
+          }, '9n6sh0032365ds');
+
+          return resolve({
+            token,
+            expireRefreshTokenDate,
+            expireTokenDate
+          });
+        }
+        return reject({email: 'Email or password invalid'});
+      });
+    });
+  }
 };

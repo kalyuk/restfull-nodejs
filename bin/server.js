@@ -9,8 +9,8 @@ class Server {
   boot = [
     'database',
     'migrations',
-    'service-boot',
     'middleware',
+    'service-boot',
     'router'
   ];
 
