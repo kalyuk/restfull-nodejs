@@ -2,7 +2,6 @@ function includes(model, db, schema, req) {
   let include = [];
   let {serviceName, modelName} = req.params;
 
-
   schema.forEach(params => {
     if (params.model !== 'instance' && db[params.model]) {
       let actionName = model.associations[db[params.model].options.name.plural] ? 'findAll' : 'find';
@@ -60,7 +59,7 @@ export function executeAction(req, res, next, service, app) {
     Object.assign($body, {where});
   }
 
-  if (['POST'].indexOf(method) !== -1) {
+  if (['POST', 'PUT'].indexOf(method) !== -1) {
     Object.assign($body, body);
   }
 
@@ -75,7 +74,7 @@ export function executeAction(req, res, next, service, app) {
     });
   }).catch((error) => {
     res.status(500).json({
-      error: app.options.ENV === 'develop' ? error : {message: error.message}
+      error: service.options.ENV === 'develop' ? error : {message: error.message}
     });
   });
 }

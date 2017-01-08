@@ -54,7 +54,6 @@
   },
   "acl": {
     "findAll": true,
-    "create": true,
     "update": true,
     "delete": true,
     "find": true

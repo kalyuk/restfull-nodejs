@@ -19,7 +19,7 @@ export default function (app) {
 
         method = ['all', 'get', 'post', 'put', 'delete'].indexOf(method) !== -1 ? method : 'all';
 
-        let {controller, action, prefix} = routes[serviceName][route];
+        let {controller, action, prefix, needPermission} = routes[serviceName][route];
 
         if (!controllers[`${serviceName}:${controller}`]) {
           let controllerPath = path.join(
@@ -34,7 +34,14 @@ export default function (app) {
         }
 
         app[method](`${(prefix ? prefix : '/api')}/${serviceName}${uri}`, (req, res) => {
-          return controllers[`${serviceName}:${controller}`][action + 'Action'](req, res, app.service[serviceName]);
+          if (!needPermission
+            || req.isHavePermission(`${serviceName.toLowerCase()}:${controller.toLowerCase()}:${action}`)) {
+            return controllers[`${serviceName}:${controller}`][action + 'Action'](req, res, app.service[serviceName]);
+          }
+          return res.status(401).json({
+            error: 'Permission deny'
+          });
+
         });
       });
     });
