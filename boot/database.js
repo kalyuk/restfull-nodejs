@@ -35,7 +35,7 @@ export default function (app) {
               instanceMethods: {},
               classMethods: {}
             }, fn);
-
+            options.classMethods.public = schema.public;
             options.classMethods.acl = {};
 
             if (schema.acl) {
@@ -74,7 +74,7 @@ export default function (app) {
             };
             app.service[serviceName].db[dbName][schema.model] = instance.define(schema.model, define, options);
 
-            let salt = 'm93k' + serviceName + 'd7nsd' + schema.model + 'osdi4' + dbName + '3820d';
+            let salt = 'm93f6' + serviceName + 'd7n3d' + schema.model + 'odi' + dbName + '382d';
             let length = 8;
             let key = 'ABCDEFGHKLMNPRSTUWXYZ1234567890';
 

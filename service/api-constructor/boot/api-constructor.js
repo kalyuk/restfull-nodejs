@@ -12,7 +12,7 @@ export default function (app, {prefix}) {
         Object.keys(service.db).forEach(dbName => {
           let db = service.db[dbName];
           Object.keys(db).forEach(modelName => {
-            if (modelName !== 'instance') {
+            if (modelName !== 'instance' &&  db[modelName].public) {
               let model = db[modelName];
               let url = `${prefix}/${serviceName}/${modelName}`.toLowerCase();
 
