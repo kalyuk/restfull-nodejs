@@ -1,5 +1,5 @@
-export function loginAction({body}, res, {db: {main: {User}}}) {
-  User.login(body.email, body.password).then((user) => {
+export function loginAction(req, res, {options: {SECRET}, db: {main: {User}}}) {
+  User.login(req.body.email, req.body.password, SECRET, req.ip).then((user) => {
     res.json({
       data: user
     });

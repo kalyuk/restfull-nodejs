@@ -1,5 +1,6 @@
 import passwordHash from 'password-hash';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 export const setterMethods = {
   password: function (value) {
@@ -33,7 +34,7 @@ export const classMethods = {
       otherKey: 'roleId'
     });
   },
-  login: function (email, password) {
+  login: function (email, password, secret, ip) {
     let {Role, Permission} = this.sequelize.models;
     return new Promise((resolve, reject) => {
       this.find({
@@ -42,42 +43,34 @@ export const classMethods = {
           email: email
         }
       }).then(user => {
-        if (user.validPassword(password)) {
+        if (user && user.validPassword(password)) {
+          let permissions = [];
           let roles = user.roles.map(role => {
-            let tmp = {};
-            let t = {};
             role.permissions.forEach(permission => {
-              if (!t[`${permission.service}:${permission.model}`]) {
-                t[`${permission.service}:${permission.model}`] = 0;
-              }
-              t[`${permission.service}:${permission.model}`] += 1;
+              permissions.push(`${permission.service}:${permission.model}:${permission.method}`);
             });
-            tmp[role.name] = t;
-            return tmp;
+            return role.name;
           });
 
           let expireDate = new Date();
           expireDate.setHours(expireDate.getHours() + 8);
-          let expireTokenDate = expireDate.getTime();
-
-          expireDate.setHours(expireDate.getHours() + 6);
-          let expireRefreshTokenDate = expireDate.getTime();
-
+          let exp = expireDate.getTime();
           let token = jwt.sign({
+            hash: crypto.createHash('md5').update(secret + ip).digest('hex'),
             user: {
+              id: user.id,
               email: user.email,
-              hashId: user.hashId,
+              hashId: user.encode(user.id),
               status: user.status
             },
             roles,
-            expireRefreshTokenDate,
-            expireTokenDate
-          }, '9n6sh0032365ds');
+            permissions,
+            exp
+          }, secret);
 
           return resolve({
             token,
-            expireRefreshTokenDate,
-            expireTokenDate
+            exp
           });
         }
         return reject({email: 'Email or password invalid'});

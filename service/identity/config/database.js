@@ -8,11 +8,6 @@ export default function () {
         params: {
           host: 'localhost',
           dialect: 'postgres'
-        },
-        hashIds: {
-          salt: '38dkw947nd937x',
-          length: 8,
-          key: 'ABCDEFGHKLMNPRSTUWXYZ1234567890'
         }
       }
     }

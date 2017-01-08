@@ -32,8 +32,15 @@ export default function (app) {
             let options = Object.assign({
               tableName: schema.tableName,
               name: schema.name,
-              instanceMethods: {}
+              instanceMethods: {},
+              classMethods: {}
             }, fn);
+
+            options.classMethods.acl = {};
+
+            if (schema.acl) {
+              options.classMethods.acl = schema.acl;
+            }
 
             Object.keys(schema.properties).forEach(property => {
               let meta = schema.properties[property];

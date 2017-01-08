@@ -16,6 +16,7 @@ class Server {
 
   __options = {
     PORT: 1987,
+    SECRET: '9wej8bnifds7tdfs7d',
     ENV: 'develop',
     SERVICES: 'swagger'
   };
@@ -44,14 +45,18 @@ class Server {
       this.__app.service = {};
 
       each(services, (service, callback) => {
-        this.__app.service[service] = {};
+        this.__app.service[service] = {
+          db: {},
+          options: this.__options,
+          config: {}
+        };
         glob(path.join(__dirname, '..', 'service', service, 'config', '**', '*.js'), (err, files) => {
           files.forEach(file => {
             let name = file.split('/').pop().split('.js')[0];
             if (!config[name]) {
               config[name] = {};
             }
-            config[name][service] = require(file).default();
+            this.__app.service[service].config[name] = config[name][service] = require(file).default();
           });
           callback(null);
         });

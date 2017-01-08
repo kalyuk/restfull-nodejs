@@ -5,7 +5,7 @@
   "main": "bin/server.js",
   "scripts": {
     "start": "node node_modules/babel-cli/bin/babel-node.js bin/server.js",
-    "dev": "nodemon --exec node node_modules/babel-cli/bin/babel-node.js bin/server.js -- services=api-constructor,identity,swagger"
+    "dev": "nodemon --exec node node_modules/babel-cli/bin/babel-node.js bin/server.js -- services=api-constructor,identity,swagger secret=0j8577fg48hEmbd00sdGsdfsd"
   },
   "author": "Dmitry Kalyuk",
   "license": "MIT",
